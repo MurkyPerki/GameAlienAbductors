@@ -112,7 +112,8 @@ function draw() {
 
   //   console.log(bullet)
 
-  for (let i = 0; i < bullet.length; i++) {
+  // for (let i = 0; i < bullet.length; i++) 
+   for (i = bullet.length - 1; i >= 0; i--){
 
     bullet[i].update();
     bullet[i].show();
