@@ -9,8 +9,13 @@ let img;
 
 //class variables 
 let player1;
+let alien;
+let bullet = null
+let spacePressed = false
+let player1Damaged = false
 
-
+let player1Lives = 3
+let bullets = []
 
 function preload() {
     img = loadImage("betterSpace.jpg");
@@ -18,127 +23,175 @@ function preload() {
 }
 
 
-//classes
 
 
-class Player {
-
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.sizeX = 60
-        this.sizeY = 20
-        this.moveSpeed = 10
-        this.isMovingLeft = false
-        this.isMovingRight = false
-
-    }
-
-
-    //logic player
-    update() {
-
-        if (this.isMovingLeft) {
-            this.x -= this.moveSpeed
-        }
-
-        if (this.isMovingRight) {
-            this.x += this.moveSpeed
-        }
+let aliens = []
+let basicAliensX = 5
+let basicAliensY = 3
 
 
 
 
-    }
-
-
-
-
-    //evrything visual that needs to be shown
-    render() {
-
-        noStroke()
-        fill(255)
-        rectMode(CENTER)
-        rect(this.x, this.y, this.sizeX, this.sizeY)
-
-    }
-
-
-
-
-    //key input.
-
-    keyPressed() {
-
-
-        if (key === "a" || key === LEFT_ARROW) {
-            this.isMovingLeft = true;
-        }
-
-        if (key === "d" || key === RIGHT_ARROW) {
-            this.isMovingRight = true;
-        }
-
-    }
-
-
-
-    keyReleased() {
-        
-        if (key === "a" || key === LEFT_ARROW) {
-            this.isMovingLeft = false;
-        }
-        if (key === "d" || key === RIGHT_ARROW) {
-            this.isMovingRight = false;
-        }
-    }
-
-
-}
-
-
-
-
-
-
-
-
-function setup() {
+function setup() { //? start setup
     createCanvas(canvasWidth, canvasHeight)
 
+    player1 = new Player(width / 2, height - 20) // spawns player
 
-    player1 = new Player(width / 2, height - 20)
+    for (let a = 0; a < basicAliensX; a++) { //for loop for instantiating aliens.
+        for (let b = 0; b < basicAliensY; b++) {
+            let gap = 50
+            size = 50
+
+            x = 50 + a * (size + gap) + size / 2 // placement aliens x-axis
+            y = 50 + b * (size + gap) + size / 2  // placement aliens y-axis
+
+
+            alien = new Aliens(x, y, size)
+            aliens.push(alien)
+        }
+    } //end forLoop
+
+
+
+
+
+    // bullet = new Bullet(canvasWidth / 2,0)
+
+
+}//! end setup
+
+
+
+function renderAliens() { // for all the alien drawing.
+
+    let edge = false
+
+    
+
+
+    for (let i = 0; i < aliens.length; i++) { //for loop for drawing and updating the aliens.
+
+        aliens[i].show()
+        aliens[i].update()
+
+        if (aliens[i].x + aliens[i].size / 2 >= canvasWidth ||
+            aliens[i].x <= aliens[i].size / 2) {
+            edge = true
+        }
+
+        if (aliens[i].y + aliens[i].size >= player1.y && !player1Damaged) {
+
+            player1Lives -= 1
+            player1Damaged = true
+            resetAliens()
+            
+
+            if( player1Lives === 0){
+
+
+                noLoop()
+                gameOver()
+
+            }
+
+
+
+          
+        }
+
+    } // end for loop
+
+
+    if (edge) { // so that all te aliens shift at once
+        for (let i = 0; i < aliens.length; i++)
+            aliens[i].shiftDown();
+    } // end if edge
+
+
+
+
+}
+
+function resetAliens() {
+    aliens = [];  // Clear the current aliens array
+    player1Damaged = false;
+    // Re-create aliens 
+    for (let a = 0; a < basicAliensX; a++) {
+        for (let b = 0; b < basicAliensY; b++) {
+            let gap = 50;
+            size = 50;
+
+            x = 50 + a * (size + gap) + size / 2; // Placement on x-axis
+            y = 50 + b * (size + gap) + size / 2;  // Placement on y-axis
+
+            alien = new Aliens(x, y, size);
+            aliens.push(alien);
+        }
+    }
+}
+
+function restart() {
+    // Reset player state
+    player1 = new Player(width / 2, height - 20);  // Reset player to starting position
+    player1Lives = 3;  // Reset player lives
+    player1Damaged = false;
+
+    resetAliens()
+
+    // Reset bullets
+    bullets = [];
+
+    // Re-enable the game loop
+    loop();
+}
+
+
+
+function gameOver() {
+
+    fill(255)
+    textSize(30)
+    textAlign(CENTER)
+    text('YOU DIED',
+        canvasWidth / 2,
+        canvasHeight / 2
+    )
 
 
 
 }
 
 
-
-
-
-function draw() {
+function draw() { //? start draw
     background(0)
     image(img, 0, 0, width, height);
 
     player1.render();
     player1.update();
 
-}
+    renderAliens();
+
+    text(player1Lives,50,50)
 
 
-/* global fucntions for keypressed and keyreleased,
-and i call the class specific functions in them
- to keep it more clean. */
-
-function keyPressed() {
-
-    player1.keyPressed();
+    for (let i = 0; i < bullets.length; i++) {
 
 
-}
-function keyReleased() {
 
-    player1.keyReleased();
-}
+        bullets[i].update();
+        bullets[i].render();
+
+    }
+
+
+
+
+    // if(bullet){
+    // bullet.render();
+    // bullet.update();
+    // }
+
+
+}//! end draw
+
+

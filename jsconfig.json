@@ -6,5 +6,5 @@
     "*.js",
     "**/*.js",
     "c:\\Users\\mekke\\.vscode\\extensions\\samplavigne.p5-vscode-1.2.16\\p5types\\global.d.ts"
-  ]
+, "../../../OLD GAME/BallMovingDiffColour.js", "../../../OLD GAME/game.js", "../../../OLD GAME/Aliens.js"  ]
 }
