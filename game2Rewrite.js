@@ -147,11 +147,20 @@ function checkCollision(){
             bullets.splice(i, 1);
             bulletBoxes.splice(i, 1);
     
-            // Remove alien and its bounding box
-            aliens.splice(j, 1);
-            enemyBoxes.splice(j, 1);
+
+             // Damage the alien
+            const alienDead = aliens[j].takeDamage(1); 
+
+            if (alienDead) {
+                // Remove alien and its bounding box
+                aliens.splice(j, 1);
+                enemyBoxes.splice(j, 1);
+              }
+
+
+          
     
-            // Optional: Increase score, play sound, show explosion, etc.
+            //  Increase score, play sound, show explosion, 
     
             // Since the bullet is destroyed, break out of the inner loop
             break;

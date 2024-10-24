@@ -9,6 +9,7 @@ class Aliens {
         this.sizeY = sizeY
         this.moveSpeed = 2
         this.isDestroyed = false
+        this.health = 3
 
     }
 
@@ -26,9 +27,15 @@ class Aliens {
 
     show() {
 
-
-        noStroke()
-        fill(255)
+        noStroke();
+        // Change color based on health
+        if (this.health === 3) {
+          fill(0, 255, 0); // Green
+        } else if (this.health === 2) {
+          fill(255, 165, 0); // Orange
+        } else if (this.health === 1) {
+          fill(255, 0, 0); // Red
+        }
         rectMode(CENTER)
         rect(this.x, this.y, this.sizeX, this.sizeY)
 
@@ -36,6 +43,18 @@ class Aliens {
 
     }//end show function
 
+
+    takeDamage(damage){
+        
+        this.health -= damage;
+        if(this.health <= 0){
+        // Alien is dead, mebe add explosion effect or score increment here
+            return true;
+        }
+        return false
+        }
+
+    
 
     destroyed(){
 
