@@ -11,8 +11,12 @@ class Player {  //start player class
         this.rand = color(random(255), random(255), random(255))
 
 
-        this.fireRate = 100
+        this.fireRate = 50
         this.lastShot = 0
+
+
+        this.health = 3;
+
     }
 
 
@@ -55,9 +59,10 @@ class Player {  //start player class
 
 
 
-    gameOver(){
+    takeDamge(damage){
 
-
+        this.health -= damage
+        // i can add more feats here
         
     }
 
