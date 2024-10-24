@@ -1,6 +1,6 @@
 class Player {  //start player class
 
-    constructor(x, y) {
+    constructor(x, y,) {
         this.x = x;
         this.y = y;
         this.sizeX = 60
@@ -84,8 +84,12 @@ class Player {  //start player class
             let currentTime = frameCount
 
             if(currentTime - this.lastShot >= this.fireRate ){
-            bullet = new Bullet(this.x, this.y)
+            bullet = new Bullet(this.x, this.y,)
             bullets.push(bullet)
+
+            let bulletBox = new AABB(bullet.x, bullet.y, bullet.sizeX, bullet.sizeY)
+            bulletBoxes.push(bulletBox);
+
             spacePressed = true;
             this.lastShot = currentTime
             console.log(frameCount)
@@ -95,7 +99,7 @@ class Player {  //start player class
         
     }
 
-
+    // let bulletBoX = new AABB(bullet.x, bullet.y, bullet.sizeX, bullet.sizeY)
 
     keyReleased() {
 

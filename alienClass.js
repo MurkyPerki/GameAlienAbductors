@@ -1,12 +1,14 @@
 
 class Aliens {
 
-    constructor(x, y, size) {
+    constructor(x, y, sizeX, sizeY) {
 
         this.x = x;
         this.y = y;
-        this.size = size
-        this.moveSpeed = 10
+        this.sizeX = sizeX
+        this.sizeY = sizeY
+        this.moveSpeed = 2
+        this.isDestroyed = false
 
     }
 
@@ -28,11 +30,18 @@ class Aliens {
         noStroke()
         fill(255)
         rectMode(CENTER)
-        rect(this.x, this.y, this.size)
+        rect(this.x, this.y, this.sizeX, this.sizeY)
 
 
 
     }//end show function
+
+
+    destroyed(){
+
+        this.isDestroyed = true
+
+    }
 
 
     shiftDown() {
@@ -52,20 +61,23 @@ class Aliens {
 
 class shootingAlien extends Aliens{
 
-    constructor(){
+    constructor(x,y,sizeX, sizeY){
 
-        this.size = 50
+        this.sizeX = sizeX
+        this.sizeY = sizeY
+        this.x = x
+        this.y = y
 
-
+        this.shootInterval
     }
 
 
 
 
-    update(){
+    // update(){
+    //     this.x += this.moveSpeed
 
-
-    }
+    // }
 
 
 
@@ -74,7 +86,7 @@ class shootingAlien extends Aliens{
 
         fill(200,10,10)
         rectMode(CENTNER)
-        rect(x,y,this,size)
+        rect(this.x,this.y,this.size)
 
 
 

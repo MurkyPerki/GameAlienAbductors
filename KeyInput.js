@@ -16,13 +16,17 @@ and i call the class specific functions in them
 
     player1.keyPressed();
 
+    if (keyIsDown(32) && player1Lives < 3 && player1Lives >= 1 &&
+        player1Damaged){
+        resetAliens()
+        loop()
+        }
 
-
-    if (key === 'r' || key === 'R' && player1Lives === 0) {
+    if (key === 'r' && player1Lives === 0) {
         restart();
     }
 
-
+  
 }
 function keyReleased() {
 

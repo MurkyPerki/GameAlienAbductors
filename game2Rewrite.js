@@ -2,8 +2,8 @@
 
 
 //global variables
-let canvasHeight = 600
-let canvasWidth = 800
+let canvasHeight = 1000
+let canvasWidth = 1500
 let img;
 
 
@@ -16,6 +16,7 @@ let player1Damaged = false
 
 let player1Lives = 3
 let bullets = []
+let bulletBoxes = []
 
 function preload() {
     img = loadImage("betterSpace.jpg");
@@ -28,8 +29,8 @@ function preload() {
 let aliens = []
 let basicAliensX = 5
 let basicAliensY = 3
-
-
+let playerBox;
+let enemyBoxes = []
 
 
 function setup() { //? start setup
@@ -37,17 +38,28 @@ function setup() { //? start setup
 
     player1 = new Player(width / 2, height - 20) // spawns player
 
+    playerBox = new AABB(player1.x, player1.y, player1.sizeX, player1.sizeY)
+
+    // let bulletBoX = new AABB(bullet.x, bullet.y, bullet.sizeX, bullet.sizeY)
+
+    
+
     for (let a = 0; a < basicAliensX; a++) { //for loop for instantiating aliens.
         for (let b = 0; b < basicAliensY; b++) {
             let gap = 50
-            size = 50
+            sizeX = 50
+            sizeY = 50
 
-            x = 50 + a * (size + gap) + size / 2 // placement aliens x-axis
-            y = 50 + b * (size + gap) + size / 2  // placement aliens y-axis
+            x = 50 + a * (sizeX + gap) + sizeX / 2 // placement aliens x-axis
+            y = 50 + b * (sizeX + gap) + sizeX / 2  // placement aliens y-axis
 
 
-            alien = new Aliens(x, y, size)
+            alien = new Aliens(x, y, sizeX, sizeY)
             aliens.push(alien)
+
+            let enemyBox = new AABB(alien.x, alien.y, alien.sizeX, alien.sizeY)
+            enemyBoxes.push(enemyBox)
+            
         }
     } //end forLoop
 
@@ -71,20 +83,31 @@ function renderAliens() { // for all the alien drawing.
 
     for (let i = 0; i < aliens.length; i++) { //for loop for drawing and updating the aliens.
 
-        aliens[i].show()
         aliens[i].update()
+        aliens[i].show()
+        
 
-        if (aliens[i].x + aliens[i].size / 2 >= canvasWidth ||
-            aliens[i].x <= aliens[i].size / 2) {
+        //alien bounding boxes
+
+        enemyBoxes[i].update(aliens[i].x, aliens[i].y, aliens[i].sizeX, aliens[i].sizeY);
+        enemyBoxes[i].draw();
+
+
+        if (aliens[i].x + aliens[i].sizeX / 2 >= canvasWidth ||
+            aliens[i].x <= aliens[i].sizeX / 2) {
             edge = true
         }
 
-        if (aliens[i].y + aliens[i].size >= player1.y && !player1Damaged) {
+        if (aliens[i].y + aliens[i].sizeY >= player1.y && !player1Damaged) {
 
             player1Lives -= 1
             player1Damaged = true
-            resetAliens()
-            
+            fill(0,255,0)
+            textSize(25)
+            textAlign(CENTER)
+            text('press space', canvasWidth / 2, canvasHeight / 2)
+            noLoop()
+        
 
             if( player1Lives === 0){
 
@@ -112,22 +135,57 @@ function renderAliens() { // for all the alien drawing.
 
 }
 
+
+function checkCollision(){
+
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        for (let j = aliens.length - 1; j >= 0; j--) {
+          if (bulletBoxes[i].intersects(enemyBoxes[j])) {
+            // Collision detected between bullet i and alien j
+    
+            // Remove bullet and its bounding box
+            bullets.splice(i, 1);
+            bulletBoxes.splice(i, 1);
+    
+            // Remove alien and its bounding box
+            aliens.splice(j, 1);
+            enemyBoxes.splice(j, 1);
+    
+            // Optional: Increase score, play sound, show explosion, etc.
+    
+            // Since the bullet is destroyed, break out of the inner loop
+            break;
+          }
+        }
+      }
+
+
+
+
+}
+
 function resetAliens() {
     aliens = [];  // Clear the current aliens array
     player1Damaged = false;
     // Re-create aliens 
-    for (let a = 0; a < basicAliensX; a++) {
+    for (let a = 0; a < basicAliensX; a++) { //for loop for instantiating aliens.
         for (let b = 0; b < basicAliensY; b++) {
-            let gap = 50;
-            size = 50;
+            let gap = 50
+            sizeX = 50
+            sizeY = 50
 
-            x = 50 + a * (size + gap) + size / 2; // Placement on x-axis
-            y = 50 + b * (size + gap) + size / 2;  // Placement on y-axis
+            x = 50 + a * (sizeX + gap) + sizeX / 2 // placement aliens x-axis
+            y = 50 + b * (sizeX + gap) + sizeX / 2  // placement aliens y-axis
 
-            alien = new Aliens(x, y, size);
-            aliens.push(alien);
-        }
+
+            alien = new Aliens(x, y, sizeX, sizeY)
+            aliens.push(alien)
+
+            let enemyBox = new AABB(alien.x, alien.y, alien.sizeX, alien.sizeY)
+            enemyBoxes.push(enemyBox)
+            
     }
+ }
 }
 
 function restart() {
@@ -142,7 +200,7 @@ function restart() {
     bullets = [];
 
     // Re-enable the game loop
-    loop();
+    loop(); 
 }
 
 
@@ -156,6 +214,8 @@ function gameOver() {
         canvasWidth / 2,
         canvasHeight / 2
     )
+    textSize(10)
+    text('press R to try again', canvasWidth / 2 , canvasHeight / 2 + 15)
 
 
 
@@ -166,30 +226,46 @@ function draw() { //? start draw
     background(0)
     image(img, 0, 0, width, height);
 
-    player1.render();
     player1.update();
+    
+   
 
     renderAliens();
 
+
+
+
+  // Update and render bullets
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    bullets[i].update();
+    // bullets[i].render();
+
+    // Update bullet bounding box
+    bulletBoxes[i].update(bullets[i].x, bullets[i].y, bullets[i].sizeX, bullets[i].sizeY);
+
+    // Check if bullet is off-screen
+    if (bullets[i].offScreen()) {
+      bullets.splice(i, 1);
+      bulletBoxes.splice(i, 1);
+    } else {
+      bullets[i].render();
+     
+      bulletBoxes[i].draw();
+    }
+  }
+
+
+  playerBox.update(player1.x, player1.y, player1.sizeX, player1.sizeY)
+  checkCollision()
+
+
+    textSize(15)
     text(player1Lives,50,50)
 
+    player1.render();
+    playerBox.draw()
 
-    for (let i = 0; i < bullets.length; i++) {
-
-
-
-        bullets[i].update();
-        bullets[i].render();
-
-    }
-
-
-
-
-    // if(bullet){
-    // bullet.render();
-    // bullet.update();
-    // }
+  
 
 
 }//! end draw
